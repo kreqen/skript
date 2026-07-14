@@ -206,3 +206,4 @@ pyinstaller --onefile --windowed --name "School AI Solver" main.py
 ## Контрибьютинг
 
 Вклады приветствуются! Откройте issue или создайте pull request.
+# skript
