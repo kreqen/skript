@@ -22,15 +22,20 @@ jobs:
           python-version: 3.12
 
       - name: Install dependencies
+        shell: pwsh
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          python -m pip install -r requirements.txt
+          python -m pip install pyinstaller
 
       - name: Build Windows executable
         shell: pwsh
         run: |
-          if (-not (Test-Path "Skript.spec")) {
-            pyinstaller `
+          if (Test-Path "Skript.spec") {
+            python -m PyInstaller --noconfirm "Skript.spec"
+          }
+          else {
+            python -m PyInstaller `
               --noconfirm `
               --onefile `
               --windowed `
@@ -39,9 +44,6 @@ jobs:
               --collect-all matplotlib `
               --collect-all PIL `
               main.py
-          }
-          else {
-            pyinstaller --noconfirm "Skript.spec"
           }
 
       - name: Upload Windows executable
