@@ -1,0 +1,41 @@
+name: Build Windows Executable
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.12
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Build executable with PyInstaller
+        run: |
+          if not exist Skript.spec (
+            pyinstaller --noconfirm --onefile --windowed --name Skript --collect-all PySide6 --collect-all matplotlib --collect-all PIL main.py
+          ) else (
+            pyinstaller Skript.spec
+          )
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: Skript-Windows-Executable
+          path: dist/
