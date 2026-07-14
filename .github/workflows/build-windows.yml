@@ -14,10 +14,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Python 3.12
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: 3.12
 
@@ -26,16 +26,27 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Build executable with PyInstaller
+      - name: Build Windows executable
+        shell: pwsh
         run: |
-          if not exist Skript.spec (
-            pyinstaller --noconfirm --onefile --windowed --name Skript --collect-all PySide6 --collect-all matplotlib --collect-all PIL main.py
-          ) else (
-            pyinstaller Skript.spec
-          )
+          if (-not (Test-Path "Skript.spec")) {
+            pyinstaller `
+              --noconfirm `
+              --onefile `
+              --windowed `
+              --name Skript `
+              --collect-all PySide6 `
+              --collect-all matplotlib `
+              --collect-all PIL `
+              main.py
+          }
+          else {
+            pyinstaller --noconfirm "Skript.spec"
+          }
 
-      - name: Upload artifact
+      - name: Upload Windows executable
         uses: actions/upload-artifact@v4
         with:
-          name: Skript-Windows-Executable
-          path: dist/
+          name: Skript-Windows
+          path: dist/Skript.exe
+          if-no-files-found: error
